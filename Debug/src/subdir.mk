@@ -5,14 +5,20 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/AirlineDB.cpp \
+../src/Flight.cpp \
+../src/FlightManager.cpp \
 ../src/Person.cpp 
 
 OBJS += \
 ./src/AirlineDB.o \
+./src/Flight.o \
+./src/FlightManager.o \
 ./src/Person.o 
 
 CPP_DEPS += \
 ./src/AirlineDB.d \
+./src/Flight.d \
+./src/FlightManager.d \
 ./src/Person.d 
 
 

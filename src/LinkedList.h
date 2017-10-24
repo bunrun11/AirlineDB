@@ -9,11 +9,9 @@
 #define LINKEDLIST_H_
 
 #include <iostream>
-using namespace std;
 
 template<class T>
 class LinkedList {
-
 	protected:
 	struct Node{
 		T data;
@@ -30,6 +28,25 @@ class LinkedList {
 	int mcount = 0;
 
 	public:
+	struct Iterator{
+		friend class LinkedList<T>;
+		private:
+		LinkedList<T> &mlist;
+		Node* mpCurrent;
+
+		Iterator(LinkedList<T>&);
+
+		public:
+		T& getValue();
+
+		bool hasNext();
+		bool hasPrev();
+
+		void next();
+		void prev();
+	};
+
+	//public:
 	LinkedList<T>();
 	virtual ~LinkedList<T>();
 
@@ -37,13 +54,16 @@ class LinkedList {
 	void insertAt(T&, int);
 	virtual void deleteData(T&);
 	void clearList();
-	bool find(T&);
-	virtual T& search(T&);
+	bool search(T&);
+	virtual T& find(T&);
 	bool getLength();
+	Iterator getIterator();
 	void nodePrint();
 	void print();
 
-	std::ostream& operator<<(std::ostream&);
+	template<class U>
+	friend std::ostream& operator<<(std::ostream&, LinkedList<U>&);
+	T* operator[](std::string);
 };
 
 template<class T>
@@ -92,6 +112,46 @@ void LinkedList<T>::Node::Delete(){
 template<class T>
 LinkedList<T>::Node::~Node(){
 	delete pNext;
+}
+
+template<class T>
+LinkedList<T>::Iterator::Iterator(LinkedList<T> &list):mlist(list){
+	//mlist = list;
+	mpCurrent = mlist.mpHead;
+}
+
+//returns the data of the current node
+template<class T>
+T& LinkedList<T>::Iterator::getValue(){
+	return mpCurrent->data;
+}
+
+//checks if there is a next node
+template<class T>
+bool LinkedList<T>::Iterator::hasNext(){
+	return mpCurrent->pNext;
+}
+
+//check whether there is a previous node
+template<class T>
+bool LinkedList<T>::Iterator::hasPrev(){
+	return mpCurrent->pPrev;
+}
+
+//goes to the next node if there is one
+template<class T>
+void LinkedList<T>::Iterator::next(){
+	if(hasNext()){
+		mpCurrent = mpCurrent->pNext;
+	}
+}
+
+//goes to the previous node if there is one
+template<class T>
+void LinkedList<T>::Iterator::prev(){
+	if(hasPrev()){
+		mpCurrent = mpCurrent->pNext;
+	}
 }
 
 template<class T>
@@ -167,7 +227,6 @@ void LinkedList<T>::deleteData(T& _data){
 				if(pCurrent->pNext == 0)
 				{
 					mpTail = pCurrent->pPrev;
-					std::cout<<"tail: "<<mpTail->data<<std::endl;
 				}
 				pCurrent->Delete();
 				mcount--;
@@ -186,9 +245,9 @@ void LinkedList<T>::clearList(){
 	mpTail = 0;
 }
 
-//find whether the data is in the LinkedList
+//searches the LinkedList to see if the data is present
 template<class T>
-bool LinkedList<T>::find(T& _data){
+bool LinkedList<T>::search(T& _data){
 	if(mpHead == 0){
 		return 0;
 	}
@@ -204,11 +263,11 @@ bool LinkedList<T>::find(T& _data){
 	return 0;
 }
 
-//returns the specified data
+//returns the specified data if present
 template<class T>
-T& LinkedList<T>::search(T& _data){
+T& LinkedList<T>::find(T& _data){
 	if(mpHead == 0){
-		throw exception();
+		throw std::exception();
 	}
 
 	Node *pCurrent = mpHead;
@@ -219,7 +278,15 @@ T& LinkedList<T>::search(T& _data){
 		pCurrent = pCurrent->pNext;
 	}while(pCurrent != 0);
 
-	throw exception();
+	throw std::exception();
+}
+
+
+//returns an iterator for the linkedlist
+template<class T>
+typename LinkedList<T>::Iterator LinkedList<T>::getIterator(){
+	Iterator it(*this);
+	return it;
 }
 
 //prints the LinkedList in node form
@@ -246,28 +313,41 @@ void LinkedList<T>::print(){
 
 	Node *pCurrent = mpHead;
 	while(pCurrent->pNext != 0){
-		cout<<pCurrent->data<<endl;
+		std::cout<<pCurrent->data<<std::endl;
 		pCurrent = pCurrent->pNext;
 	}
-	cout<<pCurrent->data<<endl;
+	std::cout<<pCurrent->data<<std::endl;
 }
 
 template<class T>
-std::ostream& LinkedList<T>::operator<<(std::ostream& os)
-{
-	if(mpHead != 0){
+std::ostream& operator<<(std::ostream& os, LinkedList<T>& list){
+    if(list.mpHead == 0){
 		return os;
 	}
 
-	LinkedList<T>::Node *pCurrent;
-	pCurrent = mpHead;
-
+	typename LinkedList<T>::Node *pCurrent = list.mpHead;
 	while(pCurrent->pNext != 0){
-		os<<"["<<(pCurrent->data)<<"]-";
+		os<<pCurrent->data<<std::endl;
 		pCurrent = pCurrent->pNext;
 	}
-	os<<"["<<(pCurrent->data)<<"]"<<std::endl;
+	os<<pCurrent->data<<std::endl;
 	return os;
+}
+
+template<class T>
+T* LinkedList<T>::operator [](std::string s){
+	if(mpHead == 0){
+		return 0;
+	}
+
+	Node *pCurrent = mpHead;
+	while(pCurrent != 0){
+		if(s == pCurrent->data){
+			return &pCurrent->data;
+		}
+		pCurrent = pCurrent->pNext;
+	}
+	return 0;
 }
 
 #endif /* LINKEDLIST_H_ */

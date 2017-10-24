@@ -21,6 +21,16 @@ public:
 	Person(std::string, std::string, std::string, std::string);
 	~Person();
 
+	std::string getFirstName();
+	std::string getLastName();
+	std::string getAddress();
+	std::string getPhoneumber();
+
+	void setFirstName(std::string);
+	void setLastName(std::string);
+	void setAddress(std::string);
+	void setPhonenumber(std::string);
+
 	void print();
 
 	friend bool operator== (Person&, Person&);

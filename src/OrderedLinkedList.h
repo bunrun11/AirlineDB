@@ -16,7 +16,7 @@ class OrderedLinkedList : public LinkedList<T>{
 public:
 	 void insert(T&);
 	 void deleteData(T&);
-	 T& search(T&);
+	 T& find(T&);
 };
 
 //inserts the data in and stores it in the ascending order in the LinkedList
@@ -64,7 +64,7 @@ void OrderedLinkedList<T>::deleteData(T& _data){
 			this->mcount--;
 			return;
 		}
-		if(pCurrent->data > _data){
+		if(pCurrent->data < _data){
 			return;
 		}
 		pCurrent = pCurrent->pNext;
@@ -73,18 +73,18 @@ void OrderedLinkedList<T>::deleteData(T& _data){
 
 //returns the specified data
 template<class T>
-T& OrderedLinkedList<T>::search(T& _data){
+T& OrderedLinkedList<T>::find(T& _data){
 	typename OrderedLinkedList<T>::Node *pCurrent = this->mpHead;
 	for(int i = 0; i < this->mcount; i++){
 		if(pCurrent->data == _data){
 			return pCurrent->data;
 		}
-		if(pCurrent->data > _data){
+		if(pCurrent->data < _data){
 			break;
 		}
 		pCurrent = pCurrent->pNext;
 	}
-	throw exception();
+	throw std::exception();
 }
 
 #endif /* ORDEREDLINKEDLIST_H_ */
